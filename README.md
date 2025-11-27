@@ -3,7 +3,7 @@ When crashplan is too expensive, you rewrite shell scripts
 # Installing
 
 ## apt based installs
-* <code>sudo apt install git make rsync rsyslog</code>
+* <code>sudo apt install git make rsync ssh rsyslog</code>
 * <code>git clone https://github.com/supaplextor/rsyncplan.git</code>
 * <code>cd rsyncplan</code>
 * <code>make clean init release</code> or <code>make clean init release-all</code>
