@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"log/syslog"
@@ -22,9 +23,15 @@ func __LINEETC__() string {
 }
 
 func main() {
-	argsWithoutProg := os.Args[1:]
-	args := os.Args
-	RSYNCPLAN_DESTINATION_HOST := args[len(args)-1]
+	label := flag.String("label", "rootfs", "Backup label used in remote path (/backups/<host>/<label>/)")
+	filesystem := flag.String("filesystem", "/", "Local filesystem/path to back up with rsync")
+	flag.Parse()
+
+	argsWithoutProg := flag.Args()
+	RSYNCPLAN_DESTINATION_HOST := ""
+	if len(argsWithoutProg) > 0 {
+		RSYNCPLAN_DESTINATION_HOST = argsWithoutProg[len(argsWithoutProg)-1]
+	}
 
 	// Configure the standard logger to write to the syslog.
 	// We set the priority to LOG_NOTICE and the tag to "mygoapp".
@@ -37,6 +44,14 @@ func main() {
 
 	if len(argsWithoutProg) == 0 {
 		log.Fatalf("%s %s", __LINEETC__(), "Failure to provide target backup server (ssh+rsync+etc)?")
+		os.Exit(1)
+	}
+	if *label == "" || strings.Contains(*label, "/") {
+		log.Fatalf("%s invalid --label %q (must be a single path component)", __LINEETC__(), *label)
+		os.Exit(1)
+	}
+	if *filesystem == "" {
+		log.Fatalf("%s invalid --filesystem (cannot be empty)", __LINEETC__())
 		os.Exit(1)
 	}
 
@@ -64,7 +79,7 @@ func main() {
 		os.Exit(9)
 	}
 
-	OFS := "/backups/" + me + "/rootfs/"
+	OFS := "/backups/" + me + "/" + *label + "/"
 	log.Printf("%s %s %s %s", __LINEETC__(), "Calling ssh", RSYNCPLAN_DESTINATION_HOST, "ls -1d ... ")
 	cmd := exec.Command("ssh", RSYNCPLAN_DESTINATION_HOST,
 		"ls -1d "+OFS+"????-??-??*/ | sort -nr | head -n 20")
@@ -82,7 +97,7 @@ func main() {
 
 	ops := "--rsync-path=/usr/local/sbin/rsyncplan-exechook --timeout=1200 --exclude=/swapfile -iSaXAlx"
 	opsArray := strings.Split(ops, " ")
-	rootfs := "/" // client side; TODO/FIXME/ labels and other filesystems.
+	rootfs := *filesystem
 
 	log.Printf("%s Target destination directory calculated as: %s", __LINEETC__(), OFS+formattedTime+"/")
 	allopts := []string{}
