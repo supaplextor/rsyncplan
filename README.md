@@ -17,6 +17,12 @@ When crashplan is too expensive, you rewrite shell scripts
 # Sample Invocation
 <code># rsyncplan rsyncplan-plus201.rollback.cloud</code>
 
+<code># rsyncplan --label home --filesystem=/home/ rsyncplan-plus201.rollback.cloud</code>
+
+Defaults:
+* <code>--label=rootfs</code>
+* <code>--filesystem=/</code>
+
 It will fire off one ssh connection and close to grab most recent
 directory list. Next it will call rsync. You're advised to setup
 a ssh config entry for the remote root shell. This allows
@@ -29,7 +35,7 @@ as --link-dest= args
 
 # Target server directory structure
 * /backups
-* /backups/machine-name/rootfs/YYYY-MM-DD_HHMMSS_NS
+* /backups/machine-name/label/YYYY-MM-DD_HHMMSS_NS
 
 Server side (say the above with sshd, rsync) can use 
 hardlinks with recent <code>yyyy-mm-dd</code> attempts 
