@@ -37,10 +37,11 @@ func main() {
 	// We set the priority to LOG_NOTICE and the tag to "mygoapp".
 	logwriter, err := syslog.New(syslog.LOG_NOTICE|syslog.LOG_DAEMON, os.Args[0])
 	if err != nil {
-		log.Fatalf("%s%s %s", __LINEETC__(), "Failed to connect to syslog: ", err.Error())
-		os.Exit(3)
+		log.SetOutput(os.Stderr)
+		log.Printf("%s%s %s", __LINEETC__(), "Failed to connect to syslog, falling back to stderr: ", err.Error())
+	} else {
+		log.SetOutput(logwriter)
 	}
-	log.SetOutput(logwriter)
 
 	if len(argsWithoutProg) == 0 {
 		log.Fatalf("%s %s", __LINEETC__(), "Failure to provide target backup server (ssh+rsync+etc)?")
