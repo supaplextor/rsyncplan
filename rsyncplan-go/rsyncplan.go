@@ -96,7 +96,7 @@ func main() {
 	ld := strings.Split(string(outputString), "\n")
 	// --link-dest=
 
-	ops := "--rsync-path=/usr/local/sbin/rsyncplan-exechook --timeout=1200 --exclude=/swapfile -iSaXAlx"
+	ops := "--rsync-path=/usr/local/sbin/rsyncplan-exechook --timeout=1200 --exclude=/swapfile -iSalx"
 	opsArray := strings.Split(ops, " ")
 	rootfs := *filesystem
 
