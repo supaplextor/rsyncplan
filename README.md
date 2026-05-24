@@ -40,3 +40,19 @@ as --link-dest= args
 Server side (say the above with sshd, rsync) can use 
 hardlinks with recent <code>yyyy-mm-dd</code> attempts 
 to keep disk space use lower between different snapshots.
+
+# "failed verification -- update discarded" errors
+
+rsync performs an end-to-end checksum verification after transferring each file.
+If a source file changes *while* rsync is reading and sending it (for example,
+a compiler or build system regenerates files in an <code>*_autogen/</code>
+directory concurrently with the backup), the checksums will not match and rsync
+reports:
+
+<pre>ERROR: path/to/file failed verification -- update discarded.</pre>
+
+rsync then exits with code **23** (partial transfer due to error) or **24**
+(partial transfer due to vanished source files).  These are non-fatal: the
+affected files will simply be backed up correctly on the next rsync run once
+they are no longer changing.  rsyncplan treats exit codes 23 and 24 as
+warnings and continues normally.
