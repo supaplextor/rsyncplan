@@ -3,3 +3,4 @@ rsyncplan/rsyncplan
 */go.mod
 rsyncplan-go/rsyncplan
 rsyncplan-go/rsyncplan-go
+release/

@@ -56,6 +56,18 @@ func main() {
 	err = cmd.Run()
 	// stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			exitCode := exitErr.ExitCode()
+			// Exit code 23: partial transfer due to error (e.g. source files changed during
+			// transfer, causing "failed verification -- update discarded").
+			// Exit code 24: partial transfer due to vanished source files.
+			// Both are non-fatal: pass them back to the calling rsync client as-is so it
+			// can report the partial transfer correctly.
+			if exitCode == 23 || exitCode == 24 {
+				log.Printf("%s rsync exited with code %d (partial transfer -- some files may have changed during backup)", __LINEETC__(), exitCode)
+				os.Exit(exitCode)
+			}
+		}
 		log.Fatalf("%s %s %s", __LINEETC__(), "rsync", err.Error())
 		os.Exit(255)
 	}
