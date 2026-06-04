@@ -6,8 +6,14 @@ When crashplan is too expensive, you rewrite shell scripts
 * <code>sudo apt install git make rsync ssh rsyslog</code>
 * <code>git clone https://github.com/supaplextor/rsyncplan.git</code>
 * <code>cd rsyncplan</code>
-* <code>make clean init release</code> or <code>make clean init release-all</code>
+* <code>make clean init release</code>
 * <code>sudo make gnu-install</code> or <code># make bsd-install</code>
+
+Note: `make release-all` builds cross-compiled release tarballs for all
+supported platforms and is **not** needed for a single-machine install.
+The install targets (`gnu-install`, `bsd-install`) always rebuild the
+binaries natively for the current host architecture before installing,
+so you do not need to run `release-all` first.
 
 ## MacOS
 ## FreeBSD installs

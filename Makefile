@@ -11,8 +11,8 @@ init:
 	cd rsyncplan-go && go mod init ${APP}/v2 ; go mod tidy || true ; go mod download
 	cd rsyncplan-exechook && go mod init ${APP}-exechook/v2 ; go mod tidy || true ; go mod download
 build-one:
-	cd rsyncplan-go && go build 
-	cd rsyncplan-exechook && go build
+	cd rsyncplan-go && CGO_ENABLED=0 go build 
+	cd rsyncplan-exechook && CGO_ENABLED=0 go build
 release-all:
 # part of 'release' --	make build-one tgz GOOS=linux GOARCH=amd64
 #	make build-one tgz GOOS=android GOARCH=arm
@@ -43,6 +43,7 @@ release-all:
 	make build-one tgz GOOS=openbsd GOARCH=386
 	make build-one tgz GOOS=openbsd GOARCH=amd64
 	make build-one tgz GOOS=openbsd GOARCH=arm
+	make build-one
 clean:
 	cd rsyncplan-go && go clean
 	cd rsyncplan-exechook && go clean
