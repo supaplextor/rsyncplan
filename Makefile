@@ -43,19 +43,16 @@ release-all:
 	make build-one tgz GOOS=openbsd GOARCH=386
 	make build-one tgz GOOS=openbsd GOARCH=amd64
 	make build-one tgz GOOS=openbsd GOARCH=arm
+	make build-one
 clean:
 	cd rsyncplan-go && go clean
 	cd rsyncplan-exechook && go clean
 	rm -Rf ${RELEASEDIR} */go.sum */go.mod
 bsd-install:
-	cd rsyncplan-go && CGO_ENABLED=0 go build
-	cd rsyncplan-exechook && CGO_ENABLED=0 go build
 	install -v -d /usr/local/share/rsyncplan/
 	install -v README.md /usr/local/share/rsyncplan/README.md
 	install -v -p rsyncplan-go/rsyncplan rsyncplan-exechook/rsyncplan-exechook /usr/local/sbin/
 gnu-install:
-	cd rsyncplan-go && CGO_ENABLED=0 go build
-	cd rsyncplan-exechook && CGO_ENABLED=0 go build
 	install -v -d /usr/local/share/rsyncplan/
 	install -m 0644 -v -p -t /usr/local/share/rsyncplan/ README.md
 #	install -m 0644 -v -p -t /etc/sudoers.d/ rsyncplan-sudoers
