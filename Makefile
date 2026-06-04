@@ -11,8 +11,8 @@ init:
 	cd rsyncplan-go && go mod init ${APP}/v2 ; go mod tidy || true ; go mod download
 	cd rsyncplan-exechook && go mod init ${APP}-exechook/v2 ; go mod tidy || true ; go mod download
 build-one:
-	cd rsyncplan-go && go build 
-	cd rsyncplan-exechook && go build
+	cd rsyncplan-go && CGO_ENABLED=0 go build 
+	cd rsyncplan-exechook && CGO_ENABLED=0 go build
 release-all:
 # part of 'release' --	make build-one tgz GOOS=linux GOARCH=amd64
 #	make build-one tgz GOOS=android GOARCH=arm
@@ -48,10 +48,14 @@ clean:
 	cd rsyncplan-exechook && go clean
 	rm -Rf ${RELEASEDIR} */go.sum */go.mod
 bsd-install:
+	cd rsyncplan-go && CGO_ENABLED=0 go build
+	cd rsyncplan-exechook && CGO_ENABLED=0 go build
 	install -v -d /usr/local/share/rsyncplan/
 	install -v README.md /usr/local/share/rsyncplan/README.md
 	install -v -p rsyncplan-go/rsyncplan rsyncplan-exechook/rsyncplan-exechook /usr/local/sbin/
 gnu-install:
+	cd rsyncplan-go && CGO_ENABLED=0 go build
+	cd rsyncplan-exechook && CGO_ENABLED=0 go build
 	install -v -d /usr/local/share/rsyncplan/
 	install -m 0644 -v -p -t /usr/local/share/rsyncplan/ README.md
 #	install -m 0644 -v -p -t /etc/sudoers.d/ rsyncplan-sudoers
