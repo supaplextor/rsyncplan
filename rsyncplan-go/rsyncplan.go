@@ -62,9 +62,9 @@ func main() {
 		log.Fatalf("%s Cannot find hostname %s", __LINEETC__(), err.Error())
 		os.Exit(10)
 	}
-	log.Printf("%s I am %s", __LINEETC__(), me)
+	originalHostname := me
 	me = strings.ToLower(me)
-	log.Printf("%s normalized hostname for backup path: %s", __LINEETC__(), me)
+	log.Printf("%s I am %s (normalized backup path host: %s)", __LINEETC__(), originalHostname, me)
 
 	// Get the current time
 	t := time.Now()
