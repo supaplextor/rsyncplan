@@ -63,6 +63,8 @@ func main() {
 		os.Exit(10)
 	}
 	log.Printf("%s I am %s", __LINEETC__(), me)
+	me = strings.ToLower(me)
+	log.Printf("%s normalized hostname for backup path: %s", __LINEETC__(), me)
 
 	// Get the current time
 	t := time.Now()
