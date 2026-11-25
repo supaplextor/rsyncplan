@@ -47,6 +47,26 @@ Server side (say the above with sshd, rsync) can use
 hardlinks with recent <code>yyyy-mm-dd</code> attempts 
 to keep disk space use lower between different snapshots.
 
+# rsyncplan compared with Timeshift
+
+[Timeshift](https://github.com/linuxmint/timeshift) is a Linux system
+restore tool. It can create scheduled snapshots using rsync and hard links,
+or Btrfs snapshots on supported Btrfs layouts, and provides workflows for
+restoring a system from those snapshots.
+
+rsyncplan is a command-line backup transfer tool. It runs rsync over
+SSH to a separate backup server, creating timestamped directories and using
+recent snapshots as `--link-dest` targets to reuse unchanged files. You choose
+when to run it and which filesystem or path to send; it does not schedule
+snapshots or provide a system restore interface. It does not apply Timeshift's
+default exclusions for user home directories; files within the selected
+filesystem are in scope unless excluded by rsync options.
+
+In short, choose Timeshift for convenient Linux system snapshots and restore.
+Choose rsyncplan when you want manually run, SSH-based copies
+to a separately managed backup server. They solve different problems and can
+be used together.
+
 # "failed verification -- update discarded" errors
 
 rsync performs an end-to-end checksum verification after transferring each file.
