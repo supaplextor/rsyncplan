@@ -25,7 +25,15 @@ func __LINEETC__() string {
 func main() {
 	label := flag.String("label", "rootfs", "Backup label used in remote path (/backups/<host>/<label>/)")
 	filesystem := flag.String("filesystem", "/", "Local filesystem/path to back up with rsync")
+	configPath := flag.String("config", "", "Rsync options file (default: ~/.rsyncplan/config.txt)")
+	var extraOptions rsyncOptions
+	flag.Var(&extraOptions, "rsync-arg", "Additional rsync argument (repeatable)")
 	flag.Parse()
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == "config" && *configPath == "" {
+			log.Fatal("invalid --config (cannot be empty)")
+		}
+	})
 
 	argsWithoutProg := flag.Args()
 	RSYNCPLAN_DESTINATION_HOST := ""
@@ -55,6 +63,12 @@ func main() {
 		log.Fatalf("%s invalid --filesystem (cannot be empty)", __LINEETC__())
 		os.Exit(1)
 	}
+
+	options, err := loadRsyncOptions(*configPath)
+	if err != nil {
+		log.Fatalf("%s %v", __LINEETC__(), err)
+	}
+	options = append(options, extraOptions...)
 
 	//	lastArg
 	me, err := os.Hostname()
@@ -98,16 +112,13 @@ func main() {
 	ld := strings.Split(string(outputString), "\n")
 	// --link-dest=
 
-	ops := "--rsync-path=/usr/local/sbin/rsyncplan-exechook --timeout=1200 --exclude=/swapfile -iSalx"
-	opsArray := strings.Split(ops, " ")
 	rootfs := *filesystem
 
 	log.Printf("%s Target destination directory calculated as: %s", __LINEETC__(), OFS+formattedTime+"/")
 	allopts := []string{}
 	// log.Printf("%s exec: %v", __LINEETC__(), allopts)
 
-	allopts = append(allopts, opsArray...)
-	//	log.Printf("%s opsArray... %v", __LINEETC__(), opsArray)
+	allopts = append(allopts, options...)
 
 	for _, v := range ld {
 		if len(v) != 0 {

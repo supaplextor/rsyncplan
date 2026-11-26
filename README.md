@@ -34,6 +34,42 @@ directory list. Next it will call rsync. You're advised to setup
 a ssh config entry for the remote root shell. This allows
 passwordless login via ssh keys.
 
+# Configuring rsync options
+
+By default rsyncplan passes `--rsync-path=/usr/local/sbin/rsyncplan-exechook`,
+`--timeout=1200`, `--exclude=/swapfile`, and `-iSalx` to rsync. These defaults
+do not request ACLs or extended attributes. Add `-A` or `-X` only if both
+ends support them and you need to preserve that metadata.
+
+To customize a machine's options, create `~/.rsyncplan/config.txt`, with one
+complete rsync argument per line. Blank lines and lines beginning with `#`
+are ignored; surrounding whitespace is removed. Arguments are passed directly
+to rsync, not interpreted by a shell. The file **replaces all** the defaults,
+so include the remote hook and any other defaults you still need, for example:
+
+```text
+--rsync-path=/usr/local/sbin/rsyncplan-exechook
+--timeout=1200
+--exclude=/swapfile
+-iSalx
+--exclude=/path with spaces
+```
+
+Use `--config=/path/to/file` to choose another file; a missing or empty
+explicit file is an error. Without an explicit file, an absent default file
+uses the built-in options. `--rsync-arg` adds one argument after the configured
+or built-in options and can be repeated, for example:
+
+```sh
+rsyncplan --rsync-arg=--exclude=/tmp --rsync-arg=-v backup-server
+```
+
+Choose options supported by the installed rsync on each platform. Removing
+archive, ACL, or extended-attribute options may reduce the metadata preserved
+in a backup. The remote hook normally creates the snapshot directory, even
+when rsync is invoked with `--dry-run`; do not rely on that option for a
+side-effect-free rsyncplan run.
+
 # rsync --link-dest= strategy
 
 We collect a ls -1d and parse present directories 
